@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OTversionMapper">
+
+	<!--表名 -->
+	<sql id="tableName">
+		[fhadmin].[dbo].[OT_Version]
+	</sql>
+	
+    <!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+	 select ID  as rownumber		
+      ,ID
+      ,FactoryType
+      ,FactoryLocation
+      ,MachineType
+      ,Path
+      ,Version
+      ,UpdateTime
+      ,Result      
+       FROM 
+			<include refid="tableName"></include>
+     where   1=1
+     <if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 --> 
+     and FactoryType LIKE ('%' + #{pd.keywords} + '%')
+     </if>
+      
+	</select>
+	
+		<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+			 [fhadmin].[dbo].[OT_Version]
+		where 
+			[ID] = #{ID}
+	</delete>
+	
+	<!-- 保存 -->
+	<insert id="save" parameterType="pd">
+	insert into 
+		  [fhadmin].[dbo].[OT_Version]
+	(
+	   ID
+      ,FactoryType
+      ,MachineType
+      ,Path
+      ,Version
+      ,UpdateTime
+      ,FactoryLocation
+      ,Result 
+		)
+	values(
+		 #{ID}
+      ,#{FactoryType}
+      ,#{MachineType}
+      ,#{Path}
+      ,#{Version}
+      ,#{UpdateTime }
+      ,#{FactoryLocation}
+      ,#{Result} 
+		
+	)	
+	</insert>
+	
+	<!-- 通过id查询 -->
+	<select id="findById" parameterType="pd" resultType="pd" >
+	select 
+	  ID
+      ,FactoryType
+      ,MachineType
+      ,Path
+      ,Version
+      ,UpdateTime
+      ,FactoryLocation
+      ,Result  
+       FROM 
+   [fhadmin].[dbo].[OT_Version]
+     where ID=#{ID}
+	</select>
+	
+	
+	<!-- 查询是否有重复主键 -->
+	<select id="finBySimilar" parameterType="pd" resultType="int" >
+	select 
+	   count(ID)
+     from 
+   [fhadmin].[dbo].[OT_Version]
+     where 
+     	 	FactoryType   =   #{FactoryType} 
+     	and MachineType =  #{MachineType}
+	</select>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+	update 
+	   [fhadmin].[dbo].[OT_Version]
+	set
+	  ID             = #{ID}
+      ,FactoryType   = #{FactoryType}
+      ,MachineType   = #{MachineType}
+      ,Path          = #{Path}
+      ,Version       = #{Version}
+      ,UpdateTime    = #{UpdateTime}
+      ,FactoryLocation = #{FactoryLocation}
+      ,Result        = #{Result}   
+     where
+     ID=#{ID}
+	</update>
+	
+	
+</mapper>

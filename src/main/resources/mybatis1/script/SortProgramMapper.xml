@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SortProgramMapper">
+	<!--表名 -->
+	<sql id="tableName">
+		OI_SORT_PROGRAM
+	</sql>
+
+	<!-- 字段 -->
+	<sql id="Field">
+		ID,
+		[GROUP],
+		DEVICE,
+		TARGET_DEVICE,
+		TARGET_DEVICE_18,
+		PKG_SORT_HANDLER,
+		AMKORWWOPERNAME,
+		PROCESS_CODE
+	</sql>
+
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{ID},
+		#{GROUP},
+		#{DEVICE},
+		#{TARGET_DEVICE},
+		#{TARGET_DEVICE_18},
+		#{PKG_SORT_HANDLER},
+		#{AMKORWWOPERNAME},
+		#{PROCESS_CODE}
+	</sql>
+
+
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+			(
+			DEVICE LIKE '%'+#{pd.keywords}+'%'
+			or TARGET_DEVICE_18 LIKE '%'+#{pd.keywords}+'%'
+            or AMKORWWOPERNAME LIKE '%'+#{pd.keywords}+'%'
+			)
+		</if>
+
+		[fhstart]order by ID desc[fhend]
+
+	</select>
+
+	<!-- 新增 -->
+	<insert id="save" parameterType="pd">
+		insert into
+		<include refid="tableName"></include>
+		(
+		[GROUP],
+		DEVICE,
+		TARGET_DEVICE,
+		TARGET_DEVICE_18,
+		PKG_SORT_HANDLER,
+		AMKORWWOPERNAME,
+		PROCESS_CODE
+		) values (
+		#{GROUP},
+		#{DEVICE},
+		#{TARGET_DEVICE},
+		#{TARGET_DEVICE_18},
+		#{PKG_SORT_HANDLER},
+		#{AMKORWWOPERNAME},
+		#{PROCESS_CODE}
+		)
+	</insert>
+
+	<!-- 通过id查询 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where ID=#{ID}
+	</select>
+	
+	<!-- 查询是否有重复主键 -->
+	<select id="finBySimilar" parameterType="pd" resultType="int">
+		select
+		count([ID])
+		from
+		<include refid="tableName"></include>
+		where
+		1=1
+			and TARGET_DEVICE_18 = #{TARGET_DEVICE_18}
+			and AMKORWWOPERNAME = #{AMKORWWOPERNAME}
+	</select>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set
+		[GROUP] = #{GROUP},
+		DEVICE = #{DEVICE},
+		TARGET_DEVICE = #{TARGET_DEVICE},
+		TARGET_DEVICE_18 = #{TARGET_DEVICE_18},
+		PKG_SORT_HANDLER = #{PKG_SORT_HANDLER},
+		AMKORWWOPERNAME= #{AMKORWWOPERNAME},
+		PROCESS_CODE= #{PROCESS_CODE}
+		where
+		ID=#{ID}
+	</update>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where
+		[ID] = #{ID}
+	</delete>
+</mapper>

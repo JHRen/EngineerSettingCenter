@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="FileTransferFTNonMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		OA_FILETRANSFER_FT_NON
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		title,
+		requestID,
+		userID,
+		requestName,
+		customerCode,
+		device,
+		reason,
+		attachedTestResult,
+		attachCustomerApproval,
+		documentUpdate,
+		foundry,
+		other,
+		releaseDate,
+		isReadProgram,
+		testerType,
+		programNameFrom,
+		programNameTo,
+		programSourcePath,
+		programDestinationPath,
+		setupFileSourcePath,
+		setupFileDestinationPath,
+		oldVersionProgramPath,
+		autoDelete
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{title},
+		#{requestID},
+		#{userID},
+		#{requestName},
+		#{customerCode},
+		#{device},
+		#{reason},
+		#{attachedTestResult},
+		#{attachCustomerApproval},
+		#{documentUpdate},
+		#{foundry},
+		#{other},
+		#{releaseDate},
+		#{isReadProgram},
+		#{testerType},
+		#{programNameFrom},
+		#{programNameTo},
+		#{programSourcePath},
+		#{programDestinationPath},
+		#{setupFileSourcePath},
+		#{setupFileDestinationPath},
+		#{oldVersionProgramPath},
+		#{autoDelete}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			ID = #{ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			title                      = #{title},
+			requestID                  = #{requestID},
+			userID                     = #{userID},
+			requestName                = #{requestName},
+			customerCode               = #{customerCode},  
+			device                     = #{device},
+			reason                     = #{reason},
+			attachedTestResult         = #{attachedTestResult},
+			attachCustomerApproval     = #{attachCustomerApproval},
+			documentUpdate             = #{documentUpdate},  
+			foundry                    = #{foundry}, 
+			other                      = #{other},
+			releaseDate                = #{releaseDate},
+			isReadProgram              = #{isReadProgram},
+			testerType                 = #{testerType},
+			programNameFrom            = #{programNameFrom},
+			programNameTo              = #{programNameTo},
+			programSourcePath          = #{programSourcePath},
+			programDestinationPath     = #{programDestinationPath},
+			setupFileSourcePath        = #{setupFileSourcePath},
+			setupFileDestinationPath   = #{setupFileDestinationPath},
+			oldVersionProgramPath      = #{oldVersionProgramPath},
+			autoDelete                 = #{autoDelete}
+		where 
+		ID = #{ID}
+	</update>
+	
+	   <update id="editStatus" parameterType="pd">
+        update
+        <include refid="tableName"></include>
+        set 
+          <if test="STATUS != null and STATUS != ''">
+            STATUS = #{STATUS}
+          </if>
+         <if test="STOP_UPDATE != null and STOP_UPDATE != ''">
+            STOP_UPDATE = #{STOP_UPDATE}
+         </if>
+        where 
+        FHFILE_ID = #{FHFILE_ID}
+    </update>
+
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			ID = #{ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+					NAME LIKE '%'+#{pd.keywords}+'%'
+				)
+		</if>
+		<if test="pd.CUSTOMER != null and pd.CUSTOMER != ''"><!-- 分类检索 -->
+            and CUSTOMER=#{pd.CUSTOMER} 
+        </if>
+          <if test="pd.DEFECT_MODE != null and pd.DEFECT_MODE != ''"><!-- 分类检索 -->
+            and DEFECT_MODE=#{pd.DEFECT_MODE} 
+        </if>
+          <if test="pd.PROCESS != null and pd.PROCESS != ''"><!-- 分类检索 -->
+            and PROCESS=#{pd.PROCESS} 
+        </if>
+        <if test="pd.LEVEL != null and pd.LEVEL != ''"><!-- 分类检索 -->
+            and LEVEL=#{pd.LEVEL} 
+        </if>
+		<if test="pd.item!=null and pd.item!=''"><!-- 根据部门ID过滤 -->
+			and DEPARTMENT_ID = ${pd.item}
+		</if>
+		  [fhstart]order by CTIME desc[fhend]
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			FHFILE_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

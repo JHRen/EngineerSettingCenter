@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="QtscpMapper">
+    <!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+	 select [idx] as rownumber,
+       [idx]
+      ,[device]
+      ,[family_name]
+      ,[operation]
+      ,[operation_code]
+      ,[customer_code]
+      ,[MultiJobname]
+      ,[lod_file]
+     FROM [CIMitar_Factory].[dbo].[ATC_CP_APL_Setupfile]	
+     where   1=1
+     <if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 --> 
+     and [device] LIKE ('%' + #{pd.keywords} + '%')
+     </if>
+      [fhstart]order by idx  desc [fhend]
+	</select>
+	
+		<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+			[CIMitar_Factory].[dbo].[ATC_CP_APL_Setupfile]	
+		where 
+			[idx] = #{idx}
+	</delete>
+	
+	<!-- 保存 -->
+	<insert id="save" parameterType="pd">
+	insert into 
+		[CIMitar_Factory].[dbo].[ATC_CP_APL_Setupfile](
+		[device]
+      ,[family_name]
+      ,[operation]
+      ,[operation_code]
+      ,[customer_code]
+      ,[MultiJobname]
+      ,[lod_file]
+		)
+	values(
+	#{device}
+	,#{family_name}
+	,#{operation}
+	,#{operation_code}
+	,#{customer_code}
+	,#{MultiJobname}
+	,#{lod_file}
+	)	
+	</insert>
+	
+	<!-- 通过id查询 -->
+	<select id="findById" parameterType="pd" resultType="pd" >
+	select 
+	   [idx]
+	  ,[device]
+      ,[family_name]
+      ,[operation]
+      ,[operation_code]
+      ,[customer_code]
+      ,[MultiJobname]
+      ,[lod_file]
+     from [CIMitar_Factory].[dbo].[ATC_CP_APL_Setupfile]
+     where idx=#{idx}
+	</select>
+	
+	
+	<!-- 查询是否有重复主键 -->
+	<select id="finBySimilar" parameterType="pd" resultType="int" >
+	select 
+	   count([idx])
+     from [CIMitar_Factory].[dbo].[ATC_CP_APL_Setupfile]
+     where 
+     	 	[device]   =   #{device} 
+     	and [operation] =  #{operation}
+     	and [customer_code] = #{customer_code}
+	</select>
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+	update [CIMitar_Factory].[dbo].[ATC_CP_APL_Setupfile] set
+	   [device]       		 = #{device}
+      ,[family_name]		 = #{family_name}
+      ,[operation]			 = #{operation}
+      ,[operation_code]		 = #{operation_code}
+      ,[customer_code]		 = #{customer_code}
+      ,[MultiJobname]		 = #{MultiJobname}
+      ,[lod_file]			 = #{lod_file}
+     where
+     [idx]=#{idx}
+	</update>
+</mapper>

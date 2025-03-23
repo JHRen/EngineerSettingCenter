@@ -1,0 +1,5 @@
+smtp.qq.com,fh,25,fh,itfather@1b23.com,fh,123
+
+SHCN-TEST-MFG-MANAGER@amkor.com;SHCN-Test-ENG-MGR@amkor.com;
+
+Junhuan.Ren@amkor.com

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EquipmentMapper">
+
+	<!--表名 -->
+	<sql id="tableName">
+		[backend_test].[dbo].[equip_pd_manage]
+	</sql>
+	
+    <!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+	 select [ID]  as rownumber		
+      ,[ID]
+      ,[MachineType]
+      ,[AccountType]
+      ,[UserID]
+      ,[OldPasswod]
+      ,[Password]
+      ,[Status]
+      ,[EffectiveDate]
+      ,[ExpiredDate]
+      ,[RemindDate]
+      ,[IsRemindByEmail]
+      ,[GroupID]
+       FROM 
+			<include refid="tableName"></include>
+     where   1=1
+     <if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 --> 
+     and [UserID] LIKE ('%' + #{pd.keywords} + '%')
+     </if>
+      <if test="pd.Status!= null and pd.Status != ''"><!-- 状态检索 --> 
+     	and [Status] LIKE ('%' + #{pd.Status} + '%')
+     </if>
+     <if test="pd.EffectiveDate != null and pd.EffectiveDate != ''"><!-- 生效时间检索 -->
+			and EffectiveDate&gt;=#{pd.EffectiveDate} 
+		</if>
+		<if test="pd.ExpiredDate != null and pd.ExpiredDate != ''"><!-- 失效时间检索 -->
+			and ExpiredDate &lt;=#{pd.ExpiredDate} 
+		</if>
+	</select>
+	
+		<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+			[backend_test].[dbo].[equip_pd_manage]
+		where 
+			[ID] = #{id}
+	</delete>
+	
+	<!-- 保存 -->
+	<insert id="save" parameterType="pd">
+	insert into 
+		[backend_test].[dbo].[equip_pd_manage](
+		   [MachineType]
+	      ,[AccountType]
+	      ,[UserID]
+	      ,[OldPasswod]
+	      ,[Password]
+	      ,[Status]
+	      ,[EffectiveDate]
+	      ,[ExpiredDate]
+	      ,[RemindDate]
+	      ,[IsRemindByEmail]
+	      ,[GroupID]
+		)
+	values(
+		 #{MachineType}
+		,#{AccountType}
+		,#{UserID}
+		,#{OldPasswod}
+		,#{Password}
+		,#{Status}
+		,#{EffectiveDate}
+		,#{ExpiredDate}	
+		,#{RemindDate}
+		,#{IsRemindByEmail}
+		,#{GroupID}
+	)	
+	</insert>
+	
+	<!-- 通过id查询 -->
+	<select id="findById" parameterType="pd" resultType="pd" >
+	select 
+	   [ID]
+      ,[MachineType]
+      ,[AccountType]
+      ,[UserID]
+      ,[OldPasswod]
+      ,[Password]
+      ,[Status]
+      ,[EffectiveDate]
+      ,[ExpiredDate]
+      ,[RemindDate]
+      ,[IsRemindByEmail]
+      ,[GroupID]
+       FROM [backend_test].[dbo].[equip_pd_manage]
+     where id=#{id}
+	</select>
+	
+	
+	<!-- 查询是否有重复主键 -->
+	<select id="finBySimilar" parameterType="pd" resultType="int" >
+	select 
+	   count([idx])
+     from [CIMitar_Factory].[dbo].[ATC_CP_APL_Setupfile]
+     where 
+     	 	[device]   =   #{device} 
+     	and [operation] =  #{operation}
+     	and [customer_code] = #{customer_code}
+	</select>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+	update [backend_test].[dbo].[equip_pd_manage] set
+	   [MachineType]		= #{MachineType}
+      ,[AccountType]		= #{AccountType}
+      ,[UserID]				= #{UserID}
+      ,[OldPasswod]			= #{OldPasswod}
+      ,[Password]			= #{Password}
+      ,[Status]				= #{Status}
+      ,[EffectiveDate]		= #{EffectiveDate}
+      ,[ExpiredDate]		= #{ExpiredDate}
+      ,[RemindDate]			= #{RemindDate}
+      ,[IsRemindByEmail]	= #{IsRemindByEmail}
+     where
+     [ID]=#{ID}
+	</update>
+	
+	<!-- 修改 邮件状态-->
+	<update id="editEmail" parameterType="pd">
+	update [backend_test].[dbo].[equip_pd_manage] set
+   		 [IsRemindByEmail]	= #{IsRemindByEmail}
+     where
+    	 [ID]=#{ID}
+	</update>
+	
+	 <!-- 获取邮件发送列表 -->
+	<select id="listOfEmail" parameterType="String" resultType="pd">
+	 select 
+      [ID]
+      ,[MachineType]
+      ,[AccountType]
+      ,[UserID]
+      ,[OldPasswod]
+      ,[Password]
+      ,[Status]
+      ,[EffectiveDate]
+      ,[ExpiredDate]
+      ,[RemindDate]
+      ,[IsRemindByEmail]
+      ,[GroupID]
+       FROM 
+			<include refid="tableName"></include>
+	where 
+		1=1
+		and IsRemindByEmail='0'
+		and RemindDate = #{_parameter}
+	</select>
+	
+</mapper>

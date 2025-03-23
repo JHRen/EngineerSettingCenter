@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CypressMapper">
+
+	<!--表名 -->
+	<sql id="tableName">
+		CYPRESS_SBL_BIN
+	</sql>
+
+	<!-- 字段 -->
+	<sql id="Field">
+	    ID,
+		CUSTOMER_LOTNO,
+		DEVICE_NAME,
+		OPERATION_CODE,
+		UNIT,
+		PASS,
+		BIN1,
+		CAT21,
+		CAT38,
+		BIN7,
+		BIN8
+	</sql>
+
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+	    #{ID},
+		#{CUSTOMER_LOTNO},
+        #{DEVICE_NAME},
+        #{OPERATION_CODE},
+        #{UNIT},
+        #{PASS},
+        #{BIN1},
+        #{CAT21},
+        #{CAT38},
+        #{BIN7},
+        #{BIN8}
+	</sql>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		FROM
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+		<!-- orcle模糊查询语法格式 需要用 '%'||#{pd.keywords}||'%' 写法 -->
+			and CUSTOMER_LOTNO LIKE ('%'||#{pd.keywords}||'%')
+		</if>
+		 and rownum &lt;101
+	</select>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where
+		[ID] = #{ID}
+	</delete>
+
+	<!-- 保存 -->
+	<insert id="save" parameterType="pd">
+		insert into
+		<include refid="tableName"></include>
+		(
+		Cust_Tool_Name,
+		Tool_Name,
+		Customer,
+		Device_Name,
+		Operation,
+		Touchdown_Per_Wafer,
+		Touchdown_Limit,
+		Gross_Die_Per_Wafer
+		)
+		values
+		(
+		#{Cust_Tool_Name},
+		#{Tool_Name},
+		#{Customer},
+		#{Device_Name},
+		#{Operation},
+		#{Touchdown_Per_Wafer},
+		#{Touchdown_Limit},
+		#{Gross_Die_Per_Wafer}
+		)
+	</insert>
+
+	<!-- 通过id查询 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+		ID,
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where ID=#{ID}
+	</select>
+
+<!-- 列表(全部) -->
+	<select id="listAllPc" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		FROM
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
+			and Cust_Tool_Name LIKE ('%' + #{pd.keywords} + '%')
+		</if>
+	</select>
+
+	<!-- 查询是否有重复主键 -->
+	<select id="finBySimilar" parameterType="pd" resultType="int">
+		select
+		count([ID])
+		from
+		<include refid="tableName"></include>
+		where
+		1=1
+		and Cust_Tool_Name = #{Cust_Tool_Name}
+		and Device_Name = #{Device_Name}
+		and Operation = #{Operation}
+	</select>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set
+		Cust_Tool_Name = #{Cust_Tool_Name},
+		Tool_Name = #{Tool_Name},
+		Customer = #{Customer},
+		Device_Name = #{Device_Name},
+		Operation = #{Operation},
+		Touchdown_Per_Wafer = #{Touchdown_Per_Wafer},
+		Touchdown_Limit = #{Touchdown_Limit},
+		Gross_Die_Per_Wafer = #{Gross_Die_Per_Wafer}
+		where
+		ID=#{ID}
+	</update>
+</mapper>

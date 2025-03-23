@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ApprovalMapper">
+	<!--表名 -->
+	<sql id="tableName">
+		EP_APPROVAL_LOG
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+	  ID,
+	  USERNAME,
+	  CZTIME,
+	  STATUS,
+	  TABLE_FIELD_ALL,
+	  TABLE_NAME,
+	  ZT,
+	  GROUP_ID
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+	  #{ID},
+	  #{USERNAME},
+	  #{CZTIME},
+	  #{STATUS},
+	  #{TABLE_FIELD_ALL},
+	  #{TABLE_NAME},
+	  #{ZT},
+	  #{GROUP_ID}
+	</sql>
+	
+	
+    <!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+	select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.GROUP_ID!=null and pd.GROUP_ID!=''">    <!-- 用户分组 -->
+		and GROUP_ID=#{pd.GROUP_ID}
+		</if>
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+					USERNAME  LIKE '%'+#{pd.keywords}+'%'
+				
+				)
+		</if>
+		<if test="pd.lastStart!=null and pd.lastStart!=''"><!-- 开始时间检索 -->
+			and CZTIME &gt;= #{pd.lastStart} 
+		</if>
+		<if test="pd.lastEnd!=null and pd.lastEnd!=''"><!-- 结束时间检索 -->
+			and CZTIME &lt;= #{pd.lastEnd} 
+		</if>
+		<if test="pd.TABLE_NAME!=null and pd.TABLE_NAME!=''"><!-- 按表查询 -->
+			and TABLE_NAME = #{pd.TABLE_NAME} 
+		</if>
+		 and ZT='0'
+		[fhstart]order by CZTIME desc[fhend]
+			
+	</select>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+		  USERNAME,
+		  CZTIME,
+		  STATUS,
+		  TABLE_FIELD_ALL,
+		  TABLE_NAME,
+		  ZT,
+		  GROUP_ID
+		) values (
+		  #{USERNAME},
+		  #{CZTIME},
+		  #{STATUS},
+		  #{TABLE_FIELD_ALL},
+		  #{TABLE_NAME},
+		  #{ZT},
+		  #{GROUP_ID}
+		)
+	</insert>
+	
+	<!-- 通过id查询 -->
+	<select id="findById" parameterType="pd" resultType="pd" >
+	select 
+		 <include refid="Field"></include>
+     from <include refid="tableName"></include>
+      where ID=#{approvalID}
+	</select>
+	
+		<!-- 修改 状态-->
+	<update id="edit" parameterType="pd">
+	update <include refid="tableName"></include> set
+	  ZT=#{newZT},
+	  APPROVER_NAME = #{ApproverName},
+	  APPROVE_TIME = #{ApproveTime}
+     where
+     ID=#{ID}
+	</update>
+</mapper>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="scopsVersionMapper">
+    
+    <!--表名 -->
+    <sql id="tableName">
+        Scops_TesterVerSetting
+    </sql>
+    <sql id="versionDescriptionTableName">
+       Scops_VersionDescription                
+    </sql>
+    <sql id="subVerDescriptionTableName">
+        Scops_SubVerDescription                                                                     
+    </sql>
+    <sql id="processVerDescTableName">
+        Scops_ProcessVerDesc                                                                     
+    </sql>
+    
+    <!-- 字段 -->
+    <sql id="Field">
+       ID
+      ,Hostname
+      ,CustomerCode
+      ,Factory
+      ,Process
+      ,Platform
+      ,Devicename
+      ,VersionNo
+      ,VersionName
+      ,MailTo
+      ,UserName
+      ,UpdateTime
+    </sql>
+    
+    <sql id="FieldNoID">
+      Hostname
+      ,CustomerCode
+      ,Factory
+      ,Process
+      ,Platform
+      ,Devicename
+      ,VersionNo
+      ,VersionName
+      ,MailTo
+      ,UserName
+      ,UpdateTime
+    </sql>
+    
+    <!-- 字段值 -->
+    <sql id="FieldValue">
+       #{ID}
+      ,#{Hostname}
+      ,#{CustomerCode}
+      ,#{Factory}
+      ,#{Process}
+      ,#{Platform}
+      ,#{Devicename}
+      ,#{VersionNo}
+      ,#{VersionName}
+      ,#{MailTo}
+      ,#{UserName}
+      ,#{UpdateTime}
+    </sql>
+       <sql id="FieldValueNoID">
+      #{Hostname}
+      ,#{CustomerCode}
+      ,#{Factory}
+      ,#{Process}
+      ,#{Platform}
+      ,#{Devicename}
+      ,#{VersionNo}
+      ,#{VersionName}
+      ,#{MailTo}
+      ,#{UserName}
+      ,#{UpdateTime}
+    </sql>
+    
+    <!-- 新增-->
+    <insert id="save" parameterType="pd">
+        insert into 
+    <include refid="tableName"></include>
+        (
+    <include refid="FieldNoID"></include>
+        ) values (
+    <include refid="FieldValueNoID"></include>
+        )
+    </insert>
+    
+    <!-- 删除-->
+    <delete id="delete" parameterType="pd">
+        delete from
+        <include refid="tableName"></include>
+        where 
+            ID = #{ID}
+    </delete>
+    
+        <!-- 修改 -->
+    <update id="edit" parameterType="pd">
+        update
+        <include refid="tableName"></include>
+        set 
+        Hostname              = #{Hostname}, 
+        CustomerCode          = #{CustomerCode}, 
+        Factory               = #{Factory},
+        Process               = #{Process},
+        Platform              = #{Platform},  
+        Devicename            = #{Devicename},
+        VersionNo             = #{VersionNo},
+        VersionName           = #{VersionName},
+        UpdateTime            = #{UpdateTime}
+        where 
+        ID = #{ID}
+    </update>
+    
+    <!-- 通过ID获取数据 -->
+    <select id="findById" parameterType="pd" resultType="pd">
+        select 
+        <include refid="Field"></include>
+        from 
+        <include refid="tableName"></include>
+        where 
+            ID = #{ID}
+    </select>
+    
+   <!--  通过factory和process获取VersionName -->
+        <select id="getVersion" parameterType="pd" resultType="pd" >
+        select 
+            VersionNo,VersionName
+        from 
+            <include refid="processVerDescTableName"></include>
+        where 
+            Factory = #{Factory} and
+            Process = #{Process}
+    </select>
+    
+    <!-- 列表 -->
+    <select id="datalistPage" parameterType="page" resultType="pd">
+        select
+        <include refid="Field"></include>
+        from 
+        <include refid="tableName"></include>
+        where 1=1
+        <if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+            and
+                (
+                    Hostname LIKE '%'+#{pd.keywords}+'%'
+                    or
+                    CustomerCode LIKE '%'+#{pd.keywords}+'%'
+                )
+        </if>
+       
+        [fhstart]order by UpdateTime desc[fhend]
+    </select>
+    
+    <!-- 列表(全部) -->
+    <select id="listAll" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"></include>
+        from 
+        <include refid="tableName"></include>
+    </select>
+    
+        <!-- 查询是否有重复主键 -->
+    <select id="finBySimilar" parameterType="pd" resultType="int" >
+    select 
+       count(ID)
+     from  <include refid="tableName"></include>
+     where 
+            Hostname   =   #{Hostname} 
+        and CustomerCode =  #{CustomerCode}
+        and Platform =#{Platform}
+    </select>
+    
+    <!-- 批量删除 -->
+    <delete id="deleteAll" parameterType="String">
+        delete from
+        <include refid="tableName"></include>
+        where 
+            FHLOG_ID in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+        </foreach>
+    </delete>
+    
+</mapper>

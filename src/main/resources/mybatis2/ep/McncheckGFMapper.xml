@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="McncheckGFMapper">
+    <!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+	 select  [ID]  as rownumber,
+	 	ID		
+      ,[MCN_Name]
+      ,[GF_Part]
+      ,[TEST_PGM1]
+      ,[JOB_NAME]
+     FROM [ALL_GF_MCN_PGM]	
+     where   1=1
+     <if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 --> 
+     and [MCN_Name] LIKE ('%' + #{pd.keywords} + '%')
+     </if>
+     [fhstart]order by ID  desc [fhend]
+	</select>
+	
+		<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+			[ALL_GF_MCN_PGM]
+		where 
+			[ID] = #{ID}
+	</delete>
+	
+	<!-- 保存 -->
+	<insert id="save" parameterType="pd">
+	insert into [ALL_GF_MCN_PGM](
+	   [MCN_Name]
+      ,[GF_Part]
+      ,[TEST_PGM1]
+      ,[JOB_NAME]
+		)
+	values(
+	#{MCN_Name}
+	,#{GF_Part}
+	,#{TEST_PGM1}
+	,#{JOB_NAME}
+	)	
+	</insert>
+	
+	<!-- 通过id查询 -->
+	<select id="findById" parameterType="pd" resultType="pd" >
+	select 
+		ID
+	  ,[MCN_Name]
+      ,[GF_Part]
+      ,[TEST_PGM1]
+      ,[JOB_NAME]
+     from [ALL_GF_MCN_PGM]
+     where ID=#{ID}
+	</select>
+	
+	
+	<!-- 查询是否有重复主键 -->
+	<select id="finBySimilar" parameterType="pd" resultType="int" >
+	select 
+	   count([ID])
+     from [ALL_GF_MCN_PGM]
+     where 
+     	 	MCN_Name   =   #{MCN_Name} 
+	</select>
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+	update [ALL_GF_MCN_PGM] set
+	   MCN_Name     = #{MCN_Name}
+      ,GF_Part   	= #{GF_Part}
+      ,TEST_PGM1	= #{TEST_PGM1}
+      ,JOB_NAME		= #{JOB_NAME}
+     where
+     ID=#{ID}
+	</update>
+</mapper>

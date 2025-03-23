@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="McncheckTSMCMapper">
+    <!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+	 select 
+	 	[idx]
+      ,[TargetDevice]
+      ,[Nickname]
+      ,[QCTname]
+      ,[MCNDevice]
+     FROM [ATC_CP_TSMC_MCN_Check]	
+     where   1=1
+     <if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 --> 
+     and [TargetDevice] LIKE ('%' + #{pd.keywords} + '%')
+     </if>
+     [fhstart]order by idx desc[fhend]
+     
+	</select>
+	
+		<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+			[ATC_CP_TSMC_MCN_Check]
+		where 
+			[idx] = #{idx}
+	</delete>
+	
+	<!-- 保存 -->
+	<insert id="save" parameterType="pd">
+	insert into [ATC_CP_TSMC_MCN_Check](
+	   [TargetDevice]
+      ,[Nickname]
+      ,[QCTname]
+      ,[MCNDevice]
+		)
+	values(
+	#{TargetDevice}
+	,#{Nickname}
+	,#{QCTname}
+	,#{MCNDevice}
+	)	
+	</insert>
+	
+	<!-- 通过id查询 -->
+	<select id="findById" parameterType="pd" resultType="pd" >
+	select 
+		idx
+	  ,[TargetDevice]
+      ,[Nickname]
+      ,[QCTname]
+      ,[MCNDevice]
+     from [ATC_CP_TSMC_MCN_Check]
+     where idx=#{idx}
+	</select>
+	
+	
+	<!-- 查询是否有重复主键 -->
+	<select id="finBySimilar" parameterType="pd" resultType="int" >
+	select 
+	   count([idx])
+     from [ATC_CP_TSMC_MCN_Check]
+     where 
+     	 	TargetDevice   =   #{TargetDevice} 
+	</select>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+	update [ATC_CP_TSMC_MCN_Check] set
+	   TargetDevice     = #{TargetDevice}
+      ,Nickname      	= #{Nickname}
+      ,QCTname	        = #{QCTname}
+      ,MCNDevice		= #{MCNDevice}
+     where
+     idx=#{idx}
+	</update>
+</mapper>

@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EsummaryMapper">
+
+	<!--表名 -->
+	<sql id="tableName">
+		ESUM_LOT_MIR
+	</sql>
+	<sql id="hbinTableName">
+		ESUM_FILE_HBIN_YIELD
+	</sql>
+	<sql id="sbinTableName">
+		ESUM_FILE_SBIN_YIELD
+	</sql>
+
+	<!-- 字段 -->
+	<sql id="Field">
+		ID,
+		FILENAME,
+		CUSTLOTNO,
+		FTLOTNO,
+		TESTCODE,
+		RETESTCODE,
+		STARTTIME,
+		ENDTIME,
+		PROGRAM,
+		TESTER,
+		HANDLER,
+		PARTTYPE,
+		LOADBOARDID,
+		MCN,
+		DEVICE
+	</sql>
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{ID},
+		#{FILENAME},
+		#{CUSTLOTNO},
+		#{FTLOTNO},
+		#{TESTCODE},
+		#{RETESTCODE},
+		#{STARTTIME},
+		#{ENDTIME},
+		#{PROGRAM},
+		#{TESTER},
+		#{HANDLER},
+		#{PARTTYPE},
+		#{LOADBOARDID},
+		#{MCN},
+		#{DEVICE}
+	</sql>
+
+	<sql id="HbinField">
+		FILENAME,
+		LOTID,
+		TESTCODE,
+		RETESTCODE,
+		SITE,
+		HBIN,
+		HBIN_CNT,
+		FTLOTNO
+	</sql>
+	<sql id="HbinFieldValue">
+		#{FILENAME},
+		#{LOTID},
+		#{TESTCODE},
+		#{RETESTCODE},
+		#{SITE},
+		#{HBIN},
+		#{HBIN_CNT},
+		#{FTLOTNO}
+
+	</sql>
+
+	<sql id="SbinField">
+		FILENAME,
+		LOTID,
+		TESTCODE,
+		RETESTCODE,
+		SITE,
+		SBIN,
+		SBIN_CNT,
+		FTLOTNO
+	</sql>
+	<sql id="SbinFieldValue">
+		#{FILENAME},
+		#{LOTID},
+		#{TESTCODE},
+		#{RETESTCODE},
+		#{SITE},
+		#{SBIN},
+		#{SBIN_CNT},
+		#{FTLOTNO}
+	</sql>
+
+	<!-- 查询LOTmir -->
+	<select id="listEsumLotMir" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="CUSTLOTNO!= null and CUSTLOTNO != ''">
+			and CUSTLOTNO = #{CUSTLOTNO}
+		</if>
+		<if test="FTLOTNO!= null and FTLOTNO != ''">
+			and FTLOTNO = #{FTLOTNO}
+		</if>
+		<if test=" TESTCODE != null and TESTCODE != ''">
+			and TESTCODE = #{TESTCODE}
+		</if>
+		<if test="RETESTCODE != null and RETESTCODE != ''">
+			and RETESTCODE = #{RETESTCODE}
+		</if>
+		<if test="STARTTIME != null and STARTTIME != ''">
+            and ENDTIME &gt;= #{STARTTIME} and ENDTIME &lt;=#{ENDTIME}
+        </if>
+        <if test="CUSTLOTNO == null or CUSTLOTNO == '' and FTLOTNO == null or FTLOTNO == '' and TESTCODE == null or TESTCODE == '' and RETESTCODE == null or RETESTCODE == '' and (STARTTIME == null or STARTTIME == '' or ENDTIME == null or ENDTIME == '')">
+        <!-- 如果所有参数都为空，返回空结果 -->
+        and 1=0
+        </if>
+	</select>
+
+	<!-- 查询Hardbin -->
+	<select id="listHardBin" parameterType="pd" resultType="pd">
+		select
+		<include refid="HbinField"></include>
+		from
+		<include refid="hbinTableName"></include>
+		where 1=1
+		<if test=" LOTID != null and LOTID != ''">
+			and LOTID = #{LOTID}
+		</if>
+		<if test=" testcode != null and testcode != ''">
+			and TESTCODE = #{testcode}
+		</if>
+		<if test="retestcode != null and retestcode != ''">
+			and RETESTCODE = #{retestcode}
+		</if>
+		<if test="ftlotno != null and ftlotno != ''">
+			and FTLOTNO = #{ftlotno}
+		</if>
+		<if test=" LOTID == null and LOTID == '' and testcode == null and testcode == '' and retestcode == null and retestcode == ''and ftlotno == null and ftlotno == ''">
+		  <!-- 如果所有参数都为空，返回空结果 -->
+          and 1=0
+        </if>
+		order by HBIN
+	</select>
+
+	<!-- 查询Softbin -->
+	<select id="listSoftBin" parameterType="pd" resultType="pd">
+		select
+		<include refid="SbinField"></include>
+		from
+		<include refid="sbinTableName"></include>
+		where 1=1
+		  <if test=" LOTID != null and LOTID != ''">
+            and LOTID = #{LOTID}
+        </if>
+		<if test=" testcode != null and testcode != ''">
+			and TESTCODE = #{testcode}
+		</if>
+		<if test="retestcode != null and retestcode != ''">
+			and RETESTCODE = #{retestcode}
+		</if>
+		<if test="ftlotno != null and ftlotno != ''">
+			and FTLOTNO = #{ftlotno}
+		</if>
+		<if test=" LOTID == null and LOTID == '' and testcode == null and testcode == '' and retestcode == null and retestcode == ''and ftlotno == null and ftlotno == ''">
+          <!-- 如果所有参数都为空，返回空结果 -->
+          and 1=0
+        </if>
+		order by SBIN
+	</select>
+
+	<!-- 查询不重复的ftlotno -->
+	<select id="findFtlotnoByCustlotno" parameterType="pd"
+		resultType="pd">
+		select DISTINCT FTLOTNO from
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="custlotno!= null and custlotno != ''">
+			and custlotno = #{custlotno}
+		</if>
+		<if test="custlotno== null and custlotno == ''">
+		<!-- 如果所有参数都为空，返回空结果 -->
+          and 1=0
+        </if>
+	</select>
+
+	<!-- 查询不重复的testcode -->
+	<select id="findTestcodeByCustlotno" parameterType="pd"
+		resultType="pd">
+		select DISTINCT
+		TESTCODE from
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="custlotno!= null and custlotno != ''">
+			and custlotno = #{custlotno}
+		</if>
+		<if test="custlotno == null and custlotno == ''">
+        <!-- 如果所有参数都为空，返回空结果 -->
+          and 1=0
+        </if>
+	</select>
+
+	<!-- 查询不重复的retestcode -->
+	<select id="findReTestcodeByCustlotno" parameterType="pd"
+		resultType="pd">
+		select DISTINCT
+		RETESTCODE from
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="custlotno!= null and custlotno != ''">
+			and custlotno = #{custlotno}
+		</if>
+		<if test="ftlotno!= null and ftlotno != ''">
+			and ftlotno = #{ftlotno}
+		</if>
+		<if test=" testcode != null and testcode != ''">
+			and testcode = #{testcode}
+		</if>
+
+		ORDER BY RETESTCODE
+	</select>
+
+	<!-- 查询不重复的filename -->
+	<select id="findFilenameByCustlotno" parameterType="pd"
+		resultType="pd">
+		select
+		DISTINCT
+		FILENAME from
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="custlotno !=null and custlotno != ''">
+			and custlotno = #{custlotno}
+		</if>
+		<if test="ftlotno!= null and ftlotno != ''">
+			and ftlotno = #{ftlotno}
+		</if>
+		<if test=" testcode != null and testcode != ''">
+			and testcode = #{testcode}
+		</if>
+		<if test="RETESTCODE != null and RETESTCODE != ''">
+			and retestcode = #{retestcode}
+		</if>
+	</select>
+	
+	
+	   <!-- excel 导出 LOTmir -->
+    <select id="listEsumLotMirForExcel" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        where 1=1
+        <if test="CUSTLOTNOS != null and !CUSTLOTNOS.isEmpty()">
+            and CUSTLOTNO  IN
+            <foreach item='CUSTLOTNO' collection="CUSTLOTNOS" open="(" separator="," close=")">
+              #{CUSTLOTNO}
+            </foreach>
+        </if>
+        <if test="STARTTIME != null and STARTTIME != '' and ENDTIME != null and ENDTIME != ''">
+          AND STARTTIME &gt;= #{STARTTIME}
+          AND ENDTIME &lt;= #{ENDTIME}
+        </if>
+    </select>
+    
+    <!-- excel 导出 Hardbin -->
+    <select id="listHardBinForExcel" parameterType="pd" resultType="pd">
+        select
+        <include refid="HbinField"></include>
+        from
+        <include refid="hbinTableName"></include>
+        where 1=1
+         <if test="LOTIDS != null and !LOTIDS.isEmpty()">
+            and LOTID  IN
+            <foreach item='LOTID' collection="LOTIDS" open="(" separator="," close=")">
+              #{LOTID}
+            </foreach>
+        </if>
+    </select>
+
+    <!-- excel 导出 Softbin -->
+    <select id="listSoftBinForExcel" parameterType="pd" resultType="pd">
+        select
+        <include refid="SbinField"></include>
+        from
+        <include refid="sbinTableName"></include>
+        where 1=1
+          <if test="LOTIDS != null and !LOTIDS.isEmpty()">
+            and LOTID  IN
+            <foreach item='LOTID' collection="LOTIDS" open="(" separator="," close=")">
+              #{LOTID}
+            </foreach>
+        </if>
+    </select>
+	
+</mapper>

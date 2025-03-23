@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="teradyneOIMapper">
+    
+    <!--表名 -->
+    <sql id="tableName">
+        TeradyneOI
+    </sql>
+    
+    <!-- 字段 -->
+    <sql id="Field">
+       ID
+      ,OIVersion
+      ,CustomerCode
+      ,IGXL
+      ,Process
+      ,DeviceCheck
+      ,DiskSpaceCheck
+      ,FlowidCheck
+      ,ProcessCheck
+      ,TestcodeCheck
+      ,MD5Check
+      ,IGXLCheck
+      ,OTProxyCheck
+      ,WaferidCheck
+      ,PGMCheck
+      ,LogRecord
+      ,Enable
+      ,InputTime
+      ,ModifyTime
+    </sql>
+    
+    
+    <!-- 字段值 -->
+    <sql id="FieldValue">
+       #{ID}
+      ,#{OIVersion}
+      ,#{CustomerCode}
+      ,#{IGXL}
+      ,#{Process}
+      ,#{DeviceCheck}
+      ,#{DiskSpaceCheck}
+      ,#{FlowidCheck}
+      ,#{ProcessCheck}
+      ,#{TestcodeCheck}
+      ,#{MD5Check}
+      ,#{IGXLCheck}
+      ,#{OTProxyCheck}
+      ,#{WaferidCheck}
+      ,#{PGMCheck}
+      ,#{LogRecord}
+      ,#{Enable}
+      ,#{InputTime}
+      ,#{ModifyTime}
+    </sql>
+    
+    <!-- 新增-->
+    <insert id="save" parameterType="pd">
+        insert into 
+    <include refid="tableName"></include>
+        (
+    <include refid="Field"></include>
+        ) values (
+    <include refid="FieldValue"></include>
+        )
+    </insert>
+    
+    <!-- 删除-->
+    <delete id="delete" parameterType="pd">
+        delete from
+        <include refid="tableName"></include>
+        where 
+            ID = #{ID}
+    </delete>
+    
+        <!-- 修改 -->
+    <update id="edit" parameterType="pd">
+        update
+        <include refid="tableName"></include>
+        set 
+     OIVersion    =     #{OIVersion},
+     CustomerCode =     #{CustomerCode},
+     IGXL =  #{IGXL},
+     Process =     #{Process},
+     DeviceCheck =    #{DeviceCheck},
+     DiskSpaceCheck =   #{DiskSpaceCheck},
+     FlowidCheck =        #{FlowidCheck},
+     ProcessCheck =  #{ProcessCheck},
+     TestcodeCheck    = #{TestcodeCheck},
+     MD5Check = #{MD5Check},
+     IGXLCheck = #{IGXLCheck},
+     OTProxyCheck = #{OTProxyCheck},
+     WaferidCheck = #{WaferidCheck},
+     PGMCheck = #{PGMCheck},
+     LogRecord =  #{LogRecord},
+     Enable =  #{Enable},
+     InputTime =  #{InputTime},
+     ModifyTime =  #{ModifyTime}
+        where 
+        ID = #{ID}
+    </update>
+    
+    <!-- 通过ID获取数据 -->
+    <select id="findById" parameterType="pd" resultType="pd">
+        select 
+        <include refid="Field"></include>
+        from 
+        <include refid="tableName"></include>
+        where 
+            ID = #{ID}
+    </select>
+    
+    
+    <!-- 列表 -->
+    <select id="datalistPage" parameterType="page" resultType="pd">
+        select
+        <include refid="Field"></include>
+        from 
+        <include refid="tableName"></include>
+        where 1=1
+        <if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+            and
+                (
+                    Device LIKE '%'+#{pd.keywords}+'%'
+                    or
+                    PGM LIKE '%'+#{pd.keywords}+'%'
+                )
+        </if>
+       
+        [fhstart]order by ModifyTime desc[fhend]
+    </select>
+    
+    <!-- 列表(全部) -->
+    <select id="listAll" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"></include>
+        from 
+        <include refid="tableName"></include>
+    </select>
+    
+        <!-- 查询是否有重复主键 -->
+    <select id="finBySimilar" parameterType="pd" resultType="int" >
+    select 
+       count(ID)
+     from  <include refid="tableName"></include>
+     where 
+            Device   =   #{Device} 
+        and PGM =  #{PGM}
+    </select>
+    
+    <!-- 批量删除 -->
+    <delete id="deleteAll" parameterType="String">
+        delete from
+        <include refid="tableName"></include>
+        where 
+            FHLOG_ID in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+        </foreach>
+    </delete>
+    
+</mapper>
