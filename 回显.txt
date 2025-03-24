@@ -1,3 +1,8 @@
+                // 页面加载完成后，回显已上传的文件
+        $(document).ready(function() {
+            // 回显第一个文件（Attached Test Result）
+            var file1Path = $.trim($("#attached-test-result").val());
+            if (file1Path && file1Path !== " ") {
                 // 从路径中提取文件名
                 var fileName1 = file1Path.split('/').pop();
                 if (!fileName1) {
