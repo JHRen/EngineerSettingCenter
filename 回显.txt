@@ -1,0 +1,37 @@
+                // 从路径中提取文件名
+                var fileName1 = file1Path.split('/').pop();
+                if (!fileName1) {
+                    fileName1 = file1Path.split('\\').pop();
+                }
+                
+                // 创建文件预览元素
+                var filePreview1 = '<div class="uploadifive-queue-item complete">'
+                    + '<a class="close" href="#" onclick="return false;">×</a>'
+                    + '<div><span class="filename">' + fileName1 + '</span>'
+                    + '<span class="fileinfo"> - 已上传</span></div>'
+                    + '</div>';
+                
+                // 添加到文件队列区域
+                $("#fileQueue1").html(filePreview1);
+            }
+            
+            // 回显第二个文件（Attach Customer Approval）
+            var file2Path = $.trim($("#attach-customer-approval").val());
+            if (file2Path && file2Path !== " ") {
+                // 从路径中提取文件名
+                var fileName2 = file2Path.split('/').pop();
+                if (!fileName2) {
+                    fileName2 = file2Path.split('\\').pop();
+                }
+                
+                // 创建文件预览元素
+                var filePreview2 = '<div class="uploadifive-queue-item complete">'
+                    + '<a class="close" href="#" onclick="return false;">×</a>'
+                    + '<div><span class="filename">' + fileName2 + '</span>'
+                    + '<span class="fileinfo"> - 已上传</span></div>'
+                    + '</div>';
+                
+                // 添加到文件队列区域
+                $("#fileQueue2").html(filePreview2);
+            }
+        });
